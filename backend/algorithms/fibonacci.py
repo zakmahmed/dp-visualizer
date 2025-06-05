@@ -1,6 +1,6 @@
 #Implementation of fibonacci function using recursion
 def recursive_fibonacci(n):
-    if n <= 0:
+    if n <= 0 or not isinstance(n, int):
         raise ValueError("Only positive non-zero integers can be used!") #Raises a Value error if a value less than 1 is entered
     
     if n == 1 or n == 2:
@@ -11,7 +11,7 @@ def recursive_fibonacci(n):
         
 #Implementation of fibonacci function using memoization
 def memo_fibonacci(n, memo={}):
-    if n <= 0:
+    if n <= 0 or not isinstance(n, int):
         raise ValueError("Only positive non-zero integers can be used!") #Raises a Value error if a value less than 1 is entered
     
     if n == 1 or n == 2:
@@ -26,7 +26,7 @@ def memo_fibonacci(n, memo={}):
 
 #Implementation of fibonacci function using tabulation
 def tab_fibonacci(n):
-    if n <= 0:
+    if n <= 0 or not isinstance(n, int):
         raise ValueError("Only positive non-zero integers can be used!") #Raises a Value error if a value less than 1 is entered
     
     if n == 1 or n == 2:
