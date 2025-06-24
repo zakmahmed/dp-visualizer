@@ -1,74 +1,71 @@
 import unittest
-from backend.algorithms.knapsack import recursive_knapsack, memo_knapsack, tab_knapsack
+from backend.algorithms.knapsack import knapsack_recursive_trace, knapsack_memo_trace, knapsack_tab_trace
 
 
+FIBONACCI_TEST_CASES = [
+    (0 , 0),
+    (1, 1),
+    (2, 1),
+    (5, 5),
+    (8, 21),
+    (10, 55),
+]
 
-# Helper Function
-
-def run_functions(capacity, items, weights):
-    
-    num_items = len(items)
-    return {
-        "recursive" : recursive_knapsack(capacity, items, weights, num_items),
-        "memoization" : memo_knapsack(capacity, items, weights, num_items),
-        "tabulation" : tab_knapsack(capacity, items, weights, num_items)
-    }
 
 class fibonacciTest(unittest.TestCase):
     
     
-    ''' Tests for Zero/One Knapsack implementation, each test goes over the recursive, memoisation and tabulation
-    versions for the following cases:
-    1. Expected Values
-    2. Base case Value (1 item)
-    4. Large Capacity
-    5. No Items
-    6. No Capacity'''
-    
     def setUp(self):
-        self.capacity = 7
-        self.weights = [1, 3, 4, 5]
-        self.items = [1, 4, 5, 7]
+        self.weights = [10, 20, 30]
+        self.values = [60, 100, 120]
+        self.capacity = 50
+        
+        self.expected_max_value = 220
+        self.expected_items = [1, 2]
+    
+    
+    ''' Tests for Fibonacci implementation each test goes over the recursive, memoisation and tabulation versions'''
+    
+    def test_zero_capacity_case(self):
+        trace_rec = knapsack_recursive_trace(self.weights, self.values, 0)
+        self.assertEqual(trace_rec[-1]['result'], 0)
+        
+        trace_mem = knapsack_memo_trace(self.weights, self.values, 0)
+        self.assertEqual(trace_mem[-1]['result'], 0)
+        
+        trace_tab = knapsack_tab_trace(self.weights, self.values, 0)
+        self.assertEqual(trace_tab[-1]['result'], 0)
+        self.assertEqual(trace_tab[-1]['included_items'], [])
         
     
-    def test_expected_value_input(self):
-        self.output = run_functions(self.capacity, self.items, self.weights)
-
-        self.assertEqual(self.output["recursive"], 9)
-        self.assertEqual(self.output["memoization"], 9)
-        self.assertEqual(self.output["tabulation"], 9)
+    def test_zero_items_case(self):
+        trace_rec = knapsack_recursive_trace([], [], self.capacity)
+        self.assertEqual(trace_rec[-1]['result'], 0)
+        
+        trace_mem = knapsack_memo_trace([], [], self.capacity)
+        self.assertEqual(trace_mem[-1]['result'], 0)
+        
+        trace_tab = knapsack_tab_trace([], [], self.capacity)
+        self.assertEqual(trace_tab[-1]['result'], 0)
+        self.assertEqual(trace_tab[-1]['included_items'], [])
+        
+        
+        
+    def test_knapsack_recursive(self):
+       trace = knapsack_recursive_trace(self.weights, self.values, self.capacity)
+       self.assertEqual(trace[-1]['result'], self.expected_max_value)
+       self.assertIsInstance(trace, list)
+       self.assertTrue(all(isinstance(item, dict) for item in trace))
+       
+    def test_knapsack_memo(self):
+       trace = knapsack_memo_trace(self.weights, self.values, self.capacity)
+       self.assertEqual(trace[-1]['result'], self.expected_max_value)
+       self.assertIsInstance(trace, list)
+       self.assertTrue(all(isinstance(item, dict) for item in trace))
     
-    def test_one_item_input(self):
-        self.items = [4]
-        self.weights = [1]
-        self.output = run_functions(self.capacity, self.items, self.weights)
-
-        self.assertEqual(self.output["recursive"], 4)
-        self.assertEqual(self.output["memoization"], 4)
-        self.assertEqual(self.output["tabulation"], 4)
-        
-    def test_no_item_input(self):
-        self.items = []
-        self.weights = []
-        self.output = run_functions(self.capacity, self.items, self.weights)
-
-        self.assertEqual(self.output["recursive"], 0)
-        self.assertEqual(self.output["memoization"], 0)
-        self.assertEqual(self.output["tabulation"], 0)
-        
-    def test_no_capacity_input(self):
-        self.capacity = 0
-        self.output = run_functions(self.capacity, self.items, self.weights)
-
-        self.assertEqual(self.output["recursive"], 0)
-        self.assertEqual(self.output["memoization"], 0)
-        self.assertEqual(self.output["tabulation"], 0)
-        
-    def test_no_capacity_input(self):
-        self.capacity = 500
-        self.output = run_functions(self.capacity, self.items, self.weights)
-
-        self.assertEqual(self.output["recursive"], 17)
-        self.assertEqual(self.output["memoization"], 17)
-        self.assertEqual(self.output["tabulation"], 17)
     
+    def test_knapsack_tab(self):
+       trace = knapsack_tab_trace(self.weights, self.values, self.capacity)
+       self.assertEqual(trace[-1]['result'], self.expected_max_value)
+       self.assertEqual(trace[-1]['type'], 'traceback_complete')
+       self.assertListEqual(sorted(trace[-1]['included_items']), sorted(self.expected_items))
