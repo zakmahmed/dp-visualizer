@@ -2,17 +2,7 @@ import unittest
 from backend.algorithms.knapsack import knapsack_recursive_trace, knapsack_memo_trace, knapsack_tab_trace
 
 
-FIBONACCI_TEST_CASES = [
-    (0 , 0),
-    (1, 1),
-    (2, 1),
-    (5, 5),
-    (8, 21),
-    (10, 55),
-]
-
-
-class fibonacciTest(unittest.TestCase):
+class knapsackTest(unittest.TestCase):
     
     
     def setUp(self):
