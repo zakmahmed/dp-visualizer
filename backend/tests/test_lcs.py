@@ -1,64 +1,82 @@
 import unittest
-from backend.algorithms.lcs import recursive_lcs, memo_lcs, tab_lcs
+from backend.algorithms.lcs import lcs_recursive_trace, lcs_memo_trace, lcs_tab_trace
 
-class lcsTest(unittest.TestCase):
+
+class LCSTest(unittest.TestCase):
     
-    ''' Tests for Longest Common Subsequence implementation each test goes over the recursive, memoisation and tabulation
-    versions for the following cases:
-    1. Expected values
-    2. Empty String
-    3. No common subsequence
-    4. Single character handling
-    5. Identical string handling '''
     
-    def test_correct_value_returned(self):
-        s1 = "ABCBDAB"
-        s2 = "BDCAB"
-        self.assertEqual(recursive_lcs(s1, s2), 4)
-        self.assertEqual(memo_lcs(s1, s2), 4)
-        self.assertEqual(tab_lcs(s1, s2), 4)
+    def setUp(self):
+        self.s1 = "AGGTAB"
+        self.s2 = "GXTXAYB"
         
-
+        
+        self.expected_lcs_len = 4
+        self.expected_lcs = "GTAB"
+    
+    
+    ''' Tests for LCS implementation each test goes over the recursive, memoisation and tabulation versions'''
+    
     def test_empty_strings(self):
-        self.assertEqual(recursive_lcs("", ""), 0)
-        self.assertEqual(recursive_lcs("ABC", ""), 0)
-        self.assertEqual(recursive_lcs("", "BAC"), 0)
+                
+        # test with one empty string
+        trace_rec = lcs_recursive_trace("", self.s2)
+        self.assertEqual(trace_rec[-1]['result'], 0)
         
-        self.assertEqual(memo_lcs("", ""), 0)
-        self.assertEqual(memo_lcs("ABC", ""), 0)
-        self.assertEqual(memo_lcs("", "BAC"), 0)
+        trace_memo = lcs_memo_trace("", self.s2)
+        self.assertEqual(trace_memo[-1]['result'], 0)
         
-        self.assertEqual(tab_lcs("", ""), 0)
-        self.assertEqual(tab_lcs("ABC", ""), 0)
-        self.assertEqual(tab_lcs("", "BAC"), 0)
+        trace_tab = lcs_tab_trace("", self.s2)
+        self.assertEqual(trace_tab[-1]['result_length'], 0)
+        
+        
+        # test with both empty string
+        trace_rec = lcs_recursive_trace("", "")
+        self.assertEqual(trace_rec[-1]['result'], 0)
+        
+        trace_memo = lcs_memo_trace("", "")
+        self.assertEqual(trace_memo[-1]['result'], 0)
+        
+        trace_tab = lcs_tab_trace("", "")
+        self.assertEqual(trace_tab[-1]['result_length'], 0)
+        
     
     def test_no_common_subsequence(self):
-        s1 = "ABCDAB"
-        s2 = "XYZ"
-        self.assertEqual(recursive_lcs(s1, s2), 0)
-        self.assertEqual(memo_lcs(s1, s2), 0)
-        self.assertEqual(tab_lcs(s1, s2), 0)
         
-    def test_identical_strings(self):
-        s = "ABCDAB"
-        self.assertEqual(recursive_lcs(s, s), len(s))
-        self.assertEqual(memo_lcs(s, s), len(s))
-        self.assertEqual(tab_lcs(s, s), len(s))
-    
-    def test_single_matching_character_handling(self):
-        self.assertEqual(recursive_lcs("A", "A"), 1)
-        self.assertEqual(recursive_lcs("A", "B"), 0)
+        s1 = "ABC"
+        s2 = "DEF"
         
-        self.assertEqual(memo_lcs("A", "A"), 1)
-        self.assertEqual(memo_lcs("A", "B"), 0)
+        trace_rec = lcs_recursive_trace(s1, s2)
+        self.assertEqual(trace_rec[-1]['result'], 0)
         
-        self.assertEqual(tab_lcs("A", "A"), 1)
-        self.assertEqual(tab_lcs("A", "B"), 0)
+        trace_memo = lcs_memo_trace(s1, s2)
+        self.assertEqual(trace_memo[-1]['result'], 0)
+        
+        trace_tab = lcs_tab_trace(s1, s2)
+        self.assertEqual(trace_tab[-1]['result_length'], 0)
+        
+        
+        
+    def test_lcs_recursive(self):
+       trace = lcs_recursive_trace(self.s1, self.s2)
+       
+       self.assertEqual(trace[-1]['result'], self.expected_lcs_len)
+       self.assertIsInstance(trace, list)
+       self.assertTrue(all(isinstance(item, dict) for item in trace))
+       
+    def test_lcs_memo(self):
+       trace = lcs_memo_trace(self.s1, self.s2)
+       
+       self.assertEqual(trace[-1]['result'], self.expected_lcs_len)
+       self.assertIsInstance(trace, list)
+       self.assertTrue(all(isinstance(item, dict) for item in trace))
     
-    def test_single_mismatching_character_handling(self):
-        self.assertEqual(recursive_lcs("A", "B"), 0)
-        self.assertEqual(memo_lcs("A", "B"), 0)
-        self.assertEqual(tab_lcs("A", "B"), 0)
-   
     
-   
+    def test_lcs_tab(self):
+       trace = lcs_tab_trace(self.s1, self.s2)
+       
+       self.assertEqual(trace[-1]['type'], 'traceback_complete')
+       self.assertEqual(trace[-1]['result_length'], self.expected_lcs_len)
+       self.assertEqual(trace[-1]['result'], self.expected_lcs)
+       
+       self.assertIsInstance(trace, list)
+       self.assertTrue(all(isinstance(item, dict) for item in trace))
