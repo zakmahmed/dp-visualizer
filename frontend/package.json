@@ -18,7 +18,8 @@
     "socket.io-client": "4.8.1",
     "@testing-library/jest-dom": "6.6.3",
     "@testing-library/react": "16.3.0",
-    "@testing-library/user-event": "14.6.1"
+    "@testing-library/user-event": "14.6.1",
+    "lucide-react": "0.525.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.29.0",

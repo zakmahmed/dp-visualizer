@@ -9,8 +9,8 @@ from backend.algorithms.lcs import lcs_recursive_trace, lcs_memo_trace, lcs_tab_
 # APP AND WEBSOCKET CONFIG
 
 app = Flask(__name__)
-CORS(app, resources={r"/*" : {"origins" : "http://localhost:3000"}})
-socketio = SocketIO(app, cors_allowed_origins="http://localhost:3000")
+CORS(app, resources={r"/*" : {"origins" : "http://localhost:5173"}})
+socketio = SocketIO(app, cors_allowed_origins="http://localhost:5173")
 
 
 # ALGORITHM MAPPING
