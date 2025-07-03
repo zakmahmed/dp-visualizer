@@ -6,7 +6,7 @@ const Visualization = ({ trace, currentStep, problem, algorithm }) => {
 
     //Use Effect runs whenever the trace or current step changes
     useEffect(() => {
-        if (!d3Container.current || trace.length === 0) return;
+        if (!d3Container.current || !trace || trace.length === 0) return;
 
         const svg = d3.select(d3Container.current);
         svg.selectAll('*').remove(); // Clear previous visualization

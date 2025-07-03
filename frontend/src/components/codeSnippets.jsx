@@ -1,9 +1,10 @@
 import React from 'react'
+import { Children } from 'react';
 
 //Wrapper component for consistent code styling
 const CodeBlock = ({ children }) => (
     <pre className='text-sm bg-gray-900 text-left p-4 rounded-md overflow-x-auto h-full text-gray-300'>
-        <code>{children.trim()}</code>
+        <code>{String(children).trim()}</code>
     </pre>
 );
 

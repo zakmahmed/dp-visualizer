@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { ALGO_CONFIG } from '../data/config.jsx';
-import { Terminal, LightBulb, BarChart2 } from 'lucide-react';
+import { Terminal, Lightbulb, BarChart2 } from 'lucide-react';
 
 const InfoPanel = ({ trace, currentStep, problem, algorithm }) => {
     const currentTraceStep = trace[currentStep];
@@ -22,20 +22,20 @@ const InfoPanel = ({ trace, currentStep, problem, algorithm }) => {
 
     const renderMetrics = () => {
         if (algorithm === 'recursive') {
-            return <p>Function Calls: <span className='font-mono text-cyan-400'>{metrics.calls}</span></p>;
+            return <div>Function Calls: <span className='font-mono text-cyan-400'>{metrics.calls}</span></div>;
         }
 
         if (algorithm === 'memoization') {
             return (
                 <>
-                    <p>Function Calls: <span className='font-mono text-cyan-400'>{metrics.calls}</span></p>;
-                    <p>Cache Hits: <span className='font-mono text-green-400'>{metrics.cacheHits}</span></p>;
+                    <div>Function Calls: <span className='font-mono text-cyan-400'>{metrics.calls}</span></div>;
+                    <div>Cache Hits: <span className='font-mono text-green-400'>{metrics.cacheHits}</span></div>;
                 </>
             );
         }
 
         if (algorithm === 'recursive') {
-            return <p>Function Calls: <span className='font-mono text-cyan-400'>{metrics.iterations}</span></p>;
+            return <div>Function Calls: <span className='font-mono text-cyan-400'>{metrics.iterations}</span></div>;
         }
         return null;
     };
@@ -54,7 +54,7 @@ const InfoPanel = ({ trace, currentStep, problem, algorithm }) => {
             <div className='flex-1 flex flex-col gap-4'>
                 <div className='bg-gray-900 p-3 rounded-md h-1/2'>
                     <div className='flex items-center gap-2 mb-2 text-gray-400'>
-                        <LightBulb size={18}/>
+                        <Lightbulb size={18}/>
                         <h3 className='text-lg font-semibold'>Explanations</h3>
                     </div>
                     <p className='text-sm text-cyan-300 h-full overflow-y-auto'>{currentTraceStep?.explanation || 'Awaiting Visualization...'}</p>
@@ -65,7 +65,7 @@ const InfoPanel = ({ trace, currentStep, problem, algorithm }) => {
                         <BarChart2 size={18}/>
                         <h3 className='text-md font-semibold'>Metrics</h3>
                     </div>
-                    <p className='text-sm text-gray-300'>{renderMetrics()}</p>
+                    <div className='text-sm text-gray-300'>{renderMetrics()}</div>
                 </div>
             </div>
         </div>
