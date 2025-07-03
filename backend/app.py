@@ -2,9 +2,9 @@ from flask import Flask
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 
-from backend.algorithms.fibonacci import fibonacci_recursive_trace, fibonacci_memo_trace, fibonacci_tab_trace
-from backend.algorithms.knapsack import knapsack_recursive_trace, knapsack_memo_trace, knapsack_tab_trace
-from backend.algorithms.lcs import lcs_recursive_trace, lcs_memo_trace, lcs_tab_trace
+from algorithms.fibonacci import fibonacci_recursive_trace, fibonacci_memo_trace, fibonacci_tab_trace
+from algorithms.knapsack import knapsack_recursive_trace, knapsack_memo_trace, knapsack_tab_trace
+from algorithms.lcs import lcs_recursive_trace, lcs_memo_trace, lcs_tab_trace
 
 # APP AND WEBSOCKET CONFIG
 
