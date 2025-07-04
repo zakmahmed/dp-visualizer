@@ -3,8 +3,8 @@ import { Children } from 'react';
 
 //Wrapper component for consistent code styling
 const CodeBlock = ({ children }) => (
-    <pre className='text-sm bg-gray-900 text-left p-4 rounded-md overflow-x-auto h-full text-gray-300'>
-        <code>{String(children).trim()}</code>
+    <pre className='text-sm bg-gray-900 text-left p-4 rounded-md overflow-x-auto text-gray-300'>
+        <code>{React.Children.toArray(children).join('').trim()}</code>
     </pre>
 );
 
@@ -14,8 +14,7 @@ def fib(k):
     if k <= 1:
         return k
     return fib(k - 1) + fib(k - 2)
-`}
-</CodeBlock>;
+`}</CodeBlock>;
 
 export const FibMemo = () => <CodeBlock> {`
 memo = {}

@@ -20,39 +20,42 @@ const InfoPanel = ({ trace, currentStep, problem, algorithm }) => {
 
     const CodeComponent = ALGO_CONFIG[problem].code[algorithm];
 
+
     const renderMetrics = () => {
         if (algorithm === 'recursive') {
-            return <div>Function Calls: <span className='font-mono text-cyan-400'>{metrics.calls}</span></div>;
+            return <div>Function Calls: <span className='font-mono text-cyan-400'>{metrics.calls}</span></div>
         }
 
         if (algorithm === 'memoization') {
             return (
                 <>
-                    <div>Function Calls: <span className='font-mono text-cyan-400'>{metrics.calls}</span></div>;
-                    <div>Cache Hits: <span className='font-mono text-green-400'>{metrics.cacheHits}</span></div>;
+                    <div>Function Calls: <span className='font-mono text-cyan-400'>{metrics.calls}</span></div>
+                    <div>Cache Hits: <span className='font-mono text-green-400'>{metrics.cacheHits}</span></div>
                 </>
             );
         }
 
         if (algorithm === 'recursive') {
-            return <div>Function Calls: <span className='font-mono text-cyan-400'>{metrics.iterations}</span></div>;
+            return <div>Function Calls: <span className='font-mono text-cyan-400'>{metrics.iterations}</span></div>
         }
         return null;
     };
 
     return (
-        <div className='w-1/2 bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col gap-4'>
-            <div className='flex-1 h-1/2 overflow-hidden'>
-                <Terminal size={18} />
-                <h3 className='text-lg font-semibold'>Code</h3>
-            </div>
-
-            <div className='h-[calc(100%-2rem)]'>
-                {CodeComponent ? <CodeComponent/> : <p>No Code To Display.</p>}
+        <div className='w-2/3 bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col gap-4'>
+            <div>
+                <div className='flex items-center gap-2 mb-2 text-gray-400'>
+                    <Terminal size={18}/>
+                    <h3 className='text-lg font-semibold'>Code</h3>
+                </div>
+                <div className='h-[calc(100%-2rem)]'>
+                    {CodeComponent ? <CodeComponent/> : <p>No Code To Display.</p>}
+                </div>
+                
             </div>
 
             <div className='flex-1 flex flex-col gap-4'>
-                <div className='bg-gray-900 p-3 rounded-md h-1/2'>
+                <div className='bg-gray-900 p-3 rounded-md'>
                     <div className='flex items-center gap-2 mb-2 text-gray-400'>
                         <Lightbulb size={18}/>
                         <h3 className='text-lg font-semibold'>Explanations</h3>
@@ -60,7 +63,7 @@ const InfoPanel = ({ trace, currentStep, problem, algorithm }) => {
                     <p className='text-sm text-cyan-300 h-full overflow-y-auto'>{currentTraceStep?.explanation || 'Awaiting Visualization...'}</p>
                 </div>
             
-                <div className='bg-gray-900 p-3 rounded-md h-1/2'>
+                <div className='bg-gray-900 p-3 rounded-md'>
                     <div className='flex items-center gap-2 mb-2 text-gray-400'>
                         <BarChart2 size={18}/>
                         <h3 className='text-md font-semibold'>Metrics</h3>

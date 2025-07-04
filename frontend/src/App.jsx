@@ -4,7 +4,6 @@ import { ALGO_CONFIG } from './data/config.jsx';
 import ControlPanel from './components/controlPanel.jsx';
 import InfoPanel from './components/infoPanel';
 import Visualization from './components/visualization.jsx';
-import PlaybackControls from './components/playback.jsx';
 
 // Helper function to parse user inputs
 

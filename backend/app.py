@@ -64,16 +64,6 @@ def handle_execute_algorithm(data):
     if not all([problem, algorithm_type, params]):
         emit('error', {'message' : 'Invalid request. Missing fields.'})
         
-    print("--- DEBUGGING ---")
-    print(f"Received problem: '{problem}'")
-    print(f"Received algorithm: '{algorithm_type}'")
-    print(f"Available problems in mapping: {list(ALGORITHM_MAPPING.keys())}")
-    if problem in ALGORITHM_MAPPING:
-        print(f"Available algorithms for '{problem}': {list(ALGORITHM_MAPPING[problem].keys())}")
-    else:
-        print(f"'{problem}' not found in ALGORITHM_MAPPING keys.")
-    print("--- END DEBUGGING ---")
-    
     # Find the correct function to call
     func = ALGORITHM_MAPPING.get(problem, {}).get(algorithm_type)
     
