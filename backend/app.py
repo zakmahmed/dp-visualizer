@@ -2,9 +2,9 @@ from flask import Flask
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 
-from algorithms.fibonacci import fibonacci_recursive_trace, fibonacci_memo_trace, fibonacci_tab_trace
-from algorithms.knapsack import knapsack_recursive_trace, knapsack_memo_trace, knapsack_tab_trace
-from algorithms.lcs import lcs_recursive_trace, lcs_memo_trace, lcs_tab_trace
+from backend.algorithms.fibonacci import fibonacci_recursive_trace, fibonacci_memo_trace, fibonacci_tab_trace
+from backend.algorithms.knapsack import knapsack_recursive_trace, knapsack_memo_trace, knapsack_tab_trace
+from backend.algorithms.lcs import lcs_recursive_trace, lcs_memo_trace, lcs_tab_trace
 
 # APP AND WEBSOCKET CONFIG
 
@@ -57,15 +57,26 @@ def handle_execute_algorithm(data):
     '''
 
     problem = data.get('problem')
-    algorithm_type = data.get('algorithm')
+    algorithm_type = data.get('algorithm').lower()
     params = data.get('params')
     
     # Validate the request
     if not all([problem, algorithm_type, params]):
         emit('error', {'message' : 'Invalid request. Missing fields.'})
+        
+    print("--- DEBUGGING ---")
+    print(f"Received problem: '{problem}'")
+    print(f"Received algorithm: '{algorithm_type}'")
+    print(f"Available problems in mapping: {list(ALGORITHM_MAPPING.keys())}")
+    if problem in ALGORITHM_MAPPING:
+        print(f"Available algorithms for '{problem}': {list(ALGORITHM_MAPPING[problem].keys())}")
+    else:
+        print(f"'{problem}' not found in ALGORITHM_MAPPING keys.")
+    print("--- END DEBUGGING ---")
     
     # Find the correct function to call
     func = ALGORITHM_MAPPING.get(problem, {}).get(algorithm_type)
+    
     
     if not func:
         emit('error', {'message' : f"Algorithm '{algorithm_type}' for problem '{problem}' not found."})

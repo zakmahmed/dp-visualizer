@@ -11,7 +11,7 @@ export const ALGO_CONFIG = {
     fibonacci : {
         name : 'Fibonacci',
         params : [{name: 'n', type: 'number', defaultValue: 5, min: 0, max: 30}],
-        algorithms : ['Recursive', 'Memoization', 'Tabulation'],
+        algorithms : ['recursive', 'memoization', 'tabulation'],
         code: {
             recursive : FibRecursive,
             memoization : FibMemo,
@@ -26,7 +26,7 @@ export const ALGO_CONFIG = {
             {name: 'values', type: 'text', defaultValue: '60, 100, 120'},
             {name: 'capacity', type: 'number', defaultValue: '50', min: 0, max: 200}
         ],
-        algorithms : ['Recursive', 'Memoization', 'Tabulation'],
+        algorithms : ['recursive', 'memoization', 'tabulation'],
         code: {
             recursive : KnapRecursive,
             memoization : KnapMemo,
@@ -40,7 +40,7 @@ export const ALGO_CONFIG = {
             {name: 's1', type: 'text', defaultValue: 'AGGTAB'},
             {name: 's2', type: 'text', defaultValue: 'GXTXAYB'},
         ],
-        algorithms : ['Recursive', 'Memoization', 'Tabulation'],
+        algorithms : ['recursive', 'memoization', 'tabulation'],
         code: {
             recursive : LCSRecursive,
             memoization : LCSMemo,
