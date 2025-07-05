@@ -45,8 +45,9 @@ export default function App(){
 
     // Listeners
 
-    s.on('trace_step', (step) => {
-      setTrace(prev => [...prev, step]);
+    s.on('full_trace', (data) => {
+      setTrace(data.trace);
+      setVizState('running');
     });
 
     s.on('execution_complete', () => {
@@ -64,6 +65,8 @@ export default function App(){
         setCurrentStep(currentStep + 1);
       }, 300);
       return () => clearTimeout(timer);
+    } else if (vizState === 'running' && currentStep >= trace.length - 1 && trace.length > 0){
+      setVizState('complete');
     }
   }, [trace.length, currentStep, vizState]);
 
