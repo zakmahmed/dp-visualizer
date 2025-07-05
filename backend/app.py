@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 
@@ -10,7 +10,7 @@ from backend.algorithms.lcs import lcs_recursive_trace, lcs_memo_trace, lcs_tab_
 
 app = Flask(__name__)
 CORS(app, resources={r"/*" : {"origins" : "http://localhost:5173"}})
-socketio = SocketIO(app, cors_allowed_origins="http://localhost:5173")
+socketio = SocketIO(app, cors_allowed_origins="http://localhost:5173", async_mode='eventlet')
 
 
 # ALGORITHM MAPPING
@@ -69,8 +69,10 @@ def handle_execute_algorithm(data):
     
     
     if not func:
-        emit('error', {'message' : f"Algorithm '{algorithm_type}' for problem '{problem}' not found."})
+        emit('error', {'message' : f"Algorithm '{algorithm_type}' for problem '{problem}' not found."}, room = request.sid)
+        return
     
+    # Algorithm execution
     try:
         # call the appropriate function with its parameters
         if problem == 'fibonacci':
@@ -83,14 +85,16 @@ def handle_execute_algorithm(data):
              emit('error', {'message' : 'Unknown Problem type'})
              return
 
-        # Stream the trace back step-by-step
-        for step in trace:
-            emit('trace_step', step)
-        
+        # Send the stream to the frontend
+        emit('full_trace', {'trace': trace})
         emit('execution_complete', {'message': 'Execution Complete'})
+        
     
     except Exception as e:
         emit('error', {'message' :f'An error occured: {str(e)}'})
+
+
+    
 
 
 if __name__ == '__main__':
