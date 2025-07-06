@@ -46,8 +46,13 @@ export default function App(){
     // Listeners
 
     s.on('full_trace', (data) => {
-      setTrace(data.trace);
-      setVizState('running');
+      if (data && data.trace){
+        setTrace(data.trace);
+        console.log(data.trace);
+      } else{
+        console.error("'full trace' event has been received, but data or data.trace is missing")
+        setVizState('idle');
+      }
     });
 
     s.on('execution_complete', () => {
@@ -57,6 +62,12 @@ export default function App(){
     return () => s.disconnect();
 
   }, []);
+
+  useEffect(() => {
+    if (trace.length > 0 && vizState === 'loading'){
+      setVizState('running');
+    }
+  }, [trace, vizState])
 
   // Effect for auto-play visualization when running
   useEffect(() => {
