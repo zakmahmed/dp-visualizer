@@ -76,9 +76,14 @@ def handle_execute_algorithm(data):
     try:
         # call the appropriate function with its parameters
         if problem == 'fibonacci':
-            trace = func(params['n']) 
+            n = int(params['n'])
+            trace = func(n) 
         elif problem == 'knapsack':
-            trace = func(params['weights'], params['values'], params['capacity'])
+            weights = [int(w) for w in params['weights']]
+            values = [int(v) for v in params['values']]
+            capacity = int(params['capacity'])
+            trace = func(weights, values, capacity)
+            
         elif problem == 'lcs':
             trace = func(params['s1'], params['s2'])
         else:
