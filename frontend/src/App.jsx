@@ -4,6 +4,8 @@ import { ALGO_CONFIG } from './data/config.jsx';
 import ControlPanel from './components/controlPanel.jsx';
 import InfoPanel from './components/infoPanel';
 import Visualization from './components/visualization.jsx';
+import PlaybackControls from './components/playback.jsx';
+import CodePanel from './components/codePanel.jsx';
 
 // Helper function to parse user inputs
 
@@ -135,16 +137,20 @@ export default function App(){
               algorithm={algorithm}
             />
           </main>
+          <div className='w-1/2'>
+            <CodePanel problem={problem} algorithm={algorithm} />
+          </div>
 
-          <div className='h-1/3 flex gap-4'>
-            <InfoPanel
-              trace={trace}
-              currentStep={currentStep}
-              problem={problem}
-              algorithm={algorithm}
-            />
-
-            <Visualization
+          <div className='w-1/2 flex flex-col gap-4'>
+            <div className='flex-grow'>
+                <InfoPanel
+                  trace={trace}
+                  currentStep={currentStep}
+                  algorithm={algorithm}
+                />
+            </div>
+            
+            <PlaybackControls
               vizState={vizState}
               setVizState={setVizState}
               currentStep={currentStep}

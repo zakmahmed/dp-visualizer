@@ -1,8 +1,7 @@
 import React, { useMemo } from 'react';
-import { ALGO_CONFIG } from '../data/config.jsx';
-import { Terminal, Lightbulb, BarChart2 } from 'lucide-react';
+import { Lightbulb, BarChart2 } from 'lucide-react';
 
-const InfoPanel = ({ trace, currentStep, problem, algorithm }) => {
+const InfoPanel = ({ trace, currentStep, algorithm }) => {
     const currentTraceStep = trace[currentStep];
 
     //Memorize metric calculations to avoid re-computing on ever render
@@ -18,7 +17,7 @@ const InfoPanel = ({ trace, currentStep, problem, algorithm }) => {
         };
     }, [trace, currentStep]);
 
-    const CodeComponent = ALGO_CONFIG[problem].code[algorithm];
+    
 
 
     const renderMetrics = () => {
@@ -42,34 +41,21 @@ const InfoPanel = ({ trace, currentStep, problem, algorithm }) => {
     };
 
     return (
-        <div className='w-2/3 bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col gap-4'>
-            <div>
+        <div className='bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col gap-4 h-full'>
+            <div className='bg-gray-900 p-3 rounded-md'>
                 <div className='flex items-center gap-2 mb-2 text-gray-400'>
-                    <Terminal size={18}/>
-                    <h3 className='text-lg font-semibold'>Code</h3>
+                    <Lightbulb size={18}/>
+                    <h3 className='text-lg font-semibold'>Explanations</h3>
                 </div>
-                <div className='h-[calc(100%-2rem)]'>
-                    {CodeComponent ? <CodeComponent/> : <p>No Code To Display.</p>}
-                </div>
-                
+                <p className='text-sm text-cyan-300 h-full overflow-y-auto'>{currentTraceStep?.explanation || 'Awaiting Visualization...'}</p>
             </div>
-
-            <div className='flex-1 flex flex-col gap-4'>
-                <div className='bg-gray-900 p-3 rounded-md'>
-                    <div className='flex items-center gap-2 mb-2 text-gray-400'>
-                        <Lightbulb size={18}/>
-                        <h3 className='text-lg font-semibold'>Explanations</h3>
-                    </div>
-                    <p className='text-sm text-cyan-300 h-full overflow-y-auto'>{currentTraceStep?.explanation || 'Awaiting Visualization...'}</p>
-                </div>
             
-                <div className='bg-gray-900 p-3 rounded-md'>
-                    <div className='flex items-center gap-2 mb-2 text-gray-400'>
-                        <BarChart2 size={18}/>
-                        <h3 className='text-md font-semibold'>Metrics</h3>
-                    </div>
-                    <div className='text-sm text-gray-300'>{renderMetrics()}</div>
+            <div className='bg-gray-900 p-3 rounded-md'>
+                <div className='flex items-center gap-2 mb-2 text-gray-400'>
+                    <BarChart2 size={18}/>
+                    <h3 className='text-md font-semibold'>Metrics</h3>
                 </div>
+                <div className='text-sm text-gray-300'>{renderMetrics()}</div>
             </div>
         </div>
     ); 
