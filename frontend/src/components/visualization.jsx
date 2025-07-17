@@ -43,7 +43,7 @@ const layoutTree = (node, nodeX = 0, depth = 0) => {
         let childstartX = node.x - childrenWidth / 2;
 
         node.children.forEach(child => {
-            layoutTree(child, childstartX, depth + 1,);
+            layoutTree(child, childstartX, depth + 1);
             childstartX += 150;
         });
     }
@@ -65,15 +65,27 @@ const flattenTree = (node) => {
 
 const TreeVisualizer = ({ trace, currentStep, problem }) => {
     const nodeAndEdges = useMemo(() => {
+
+        if (!trace || trace.length === 0 || !trace[currentStep]){
+            console.log('Here!')
+            return {nodes: [], edges: []};
+        }
+
+        console.log(`--- Recalculating Tree (Step ${currentStep})`)
         const currentTraceSlice = trace.slice(0, currentStep + 1);
         const currentTraceStep = currentTraceSlice[currentStep];
         
         const callSteps = trace.filter(step => step.type === 'call');
-        if (callSteps.length === 0) return { nodes: [], edges: []};
+        if (callSteps.length === 0) {
+            console.log("No 'call' steps found in trace." )
+            return { nodes: [], edges: []}
+        };
 
         const rootNode = buildTree(callSteps);
+        console.log('Result of buildTree:', rootNode)
         layoutTree(rootNode);
         const allNodes = flattenTree(rootNode);
+        console.log('Result of flattenTree:', allNodes)
 
         const nodes = allNodes.map(nodeData => {
             const isVisible = nodeData.id <= currentTraceStep.id;
@@ -123,6 +135,9 @@ const TreeVisualizer = ({ trace, currentStep, problem }) => {
                 animated: node.id === currentTraceStep.id,
                 style: {stroke: '#4a5568', strokeWidth: 2  }
             }));
+
+        console.log('Final nodes for React Flow:', nodes);
+        console.log('Final edges for React Flow:', edges);
 
         return {nodes, edges};
         }, [trace, currentStep, problem])
@@ -186,7 +201,16 @@ const Visualization = ({trace, currentStep, problem, algorithm}) => {
         return <div className='flex items-center justify-center h-full text-gray-500'> Visualization Area </div>
     }
 
-    algorithm === 'tabulation' ? <TableVisualizer trace={trace} currentStep={currentStep} /> : <TreeVisualizer trace={trace} currentStep={currentStep} problem ={problem} />
+
+    if (algorithm === 'tabulation'){
+        console.log('Tabulation');
+        return <TableVisualizer trace={trace} currentStep={currentStep} />;
+    }
+    else{
+        console.log('Tree')
+        return <TreeVisualizer trace={trace} currentStep={currentStep} problem ={problem} />
+    }
+
 };
 
 export default Visualization;

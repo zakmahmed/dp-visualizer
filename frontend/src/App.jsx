@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { ALGO_CONFIG } from './data/config.jsx';
 import ControlPanel from './components/controlPanel.jsx';
@@ -37,6 +37,8 @@ export default function App(){
   const [currentStep, setCurrentStep] = useState(0);
   const [vizState, setVizState] = useState('idle');
 
+  const timerRef = useRef(null);
+
   // Effect for setting up websocket connection
   useEffect(() => {
     const s = io('http://localhost:5001');
@@ -50,9 +52,7 @@ export default function App(){
     s.on('full_trace', (data) => {
       if (data && data.trace){
         setTrace(data.trace);
-        console.log(data.trace);
       } else{
-        console.error("'full trace' event has been received, but data or data.trace is missing")
         setVizState('idle');
       }
     });
@@ -73,11 +73,11 @@ export default function App(){
 
   // Effect for auto-play visualization when running
   useEffect(() => {
+    clearTimeout(timerRef.current);
     if (vizState === 'running' && currentStep < trace.length - 1){
-      const timer = setTimeout(() => {
+      timerRef.current = setTimeout(() => {
         setCurrentStep(currentStep + 1);
       }, 300);
-      return () => clearTimeout(timer);
     } else if (vizState === 'running' && currentStep >= trace.length - 1 && trace.length > 0){
       setVizState('complete');
     }
@@ -91,7 +91,7 @@ export default function App(){
     setTrace([]);
     setCurrentStep(0);
     setError('');
-    setVizState('running');
+    setVizState('loading');
 
     const parsedParams = Object.fromEntries(
       Object.entries(params).map(([key, value]) => {
