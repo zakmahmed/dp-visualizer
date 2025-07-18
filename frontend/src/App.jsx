@@ -56,18 +56,17 @@ export default function App(){
         setVizState('idle');
       }
     });
-
-    s.on('execution_complete', () => {
-      setVizState('complete');
-    });
-
+    
     return () => s.disconnect();
 
   }, []);
 
   useEffect(() => {
     if (trace.length > 0 && vizState === 'loading'){
-      setVizState('running');
+      setTimeout(() => {
+         setVizState('running');
+      }, 0);
+     
     }
   }, [trace, vizState])
 
