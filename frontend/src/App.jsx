@@ -76,7 +76,7 @@ export default function App(){
     if (vizState === 'running' && currentStep < trace.length - 1){
       timerRef.current = setTimeout(() => {
         setCurrentStep(currentStep + 1);
-      }, 300);
+      }, 800);
     } else if (vizState === 'running' && currentStep >= trace.length - 1 && trace.length > 0){
       setVizState('complete');
     }

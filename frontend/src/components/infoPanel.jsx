@@ -12,7 +12,7 @@ const InfoPanel = ({ trace, currentStep, algorithm }) => {
         const relevantTrace = trace.slice(0, currentStep + 1);
         return {
             calls: relevantTrace.filter(step => step.type === 'call').length,
-            cacheHits: relevantTrace.filter(step => step.type === 'cache_hit').length,
+            cacheHits: relevantTrace.filter(step => step.type === 'cache-hit').length,
             iterations: relevantTrace.filter(step => step.type === 'iteration').length
         };
     }, [trace, currentStep]);

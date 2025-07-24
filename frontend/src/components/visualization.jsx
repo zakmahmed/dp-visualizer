@@ -1,157 +1,133 @@
-import React, { useMemo } from 'react';
-import ReactFlow, { Background, Controls } from 'reactflow';
+import React, { useEffect, useMemo } from 'react';
+import ReactFlow, { Background, Controls, MarkerType, useReactFlow,  ReactFlowProvider } from 'reactflow';
 import 'reactflow/dist/style.css';
-
-//Helper function to build tree
-const buildTree = (callSteps) => {
-    if (!callSteps || callSteps.length === 0) return null;
-
-    const nodesMap = new Map();
-    let root  = null;
-
-    // 1st pass: create a map of all nodes
-    callSteps.forEach(step => {
-        nodesMap.set(String(step.id), {...step, children: []});
-    });
-
-    //2nd pass: link children to parents
-    nodesMap.forEach(node => {
-        const parentId = node.parent_id;
-        if (parentId === null || parentId === undefined) {
-            root = node;
-        } else {
-            const parentNode = nodesMap.get(String(parentId));
-            if (parentNode){
-                parentNode.children.push(node);
-            }
-        }
-    });
-
-    return root;
-};
-
-//Helper function to assign coordinates to each node for react flow to draw
-
-const layoutTree = (node, nodeX = 0, depth = 0) => {
-    if (!node) return;
-
-    //Assign position
-    node.x = nodeX
-    node.y = depth * 100;
-    if (node.children && node.children.length > 0) {
-        const childrenWidth = (node.children.length - 1) * 150;
-        let childstartX = node.x - childrenWidth / 2;
-
-        node.children.forEach(child => {
-            layoutTree(child, childstartX, depth + 1);
-            childstartX += 150;
-        });
-    }
-
-};
-
-//Flatten the tree for rendering
-const flattenTree = (node) => {
-    if (!node) return [];
-
-    let nodes = [node];
-    if (node.children){
-        node.children.forEach(child => {
-            nodes = nodes.concat(flattenTree(child));
-        });
-    }
-    return nodes;
-};
+import * as d3 from 'd3';
 
 const TreeVisualizer = ({ trace, currentStep, problem }) => {
-    const nodeAndEdges = useMemo(() => {
-
-        if (!trace || trace.length === 0 || !trace[currentStep]){
-            console.log('Here!')
-            return {nodes: [], edges: []};
+    const reactFlowInstance = useReactFlow();
+    const nodesAndEdges = useMemo(() => {
+        if (!trace || trace.length === 0 || !trace[currentStep]) {
+            return { nodes: [], edges: [] };
         }
 
-        console.log(`--- Recalculating Tree (Step ${currentStep})`)
         const currentTraceSlice = trace.slice(0, currentStep + 1);
         const currentTraceStep = currentTraceSlice[currentStep];
-        
+
         const callSteps = trace.filter(step => step.type === 'call');
-        if (callSteps.length === 0) {
-            console.log("No 'call' steps found in trace." )
-            return { nodes: [], edges: []}
-        };
+        if (callSteps.length === 0) return { nodes: [], edges: []};
 
-        const rootNode = buildTree(callSteps);
-        console.log('Result of buildTree:', rootNode)
-        layoutTree(rootNode);
-        const allNodes = flattenTree(rootNode);
-        console.log('Result of flattenTree:', allNodes)
+        const stratifyData = callSteps.map(d => ({
+            id: String(d.id),
+            parentId: (d.parent === null || d.parent === undefined) ? "" : String(d.parent),
+            originalData: d
+        }));
 
-        const nodes = allNodes.map(nodeData => {
+        const root = d3.stratify()
+            .id(d => d.id)
+            .parentId(d => d.parentId)(stratifyData);
+        
+        d3.tree().nodeSize([220, 160])(root);
+
+        const allNodes = root.descendants();
+
+        const nodes = allNodes.map(d3Node => {
+            const nodeData = d3Node.data.originalData;
             const isVisible = nodeData.id <= currentTraceStep.id;
+            const returnStep = currentTraceSlice.find(s => s.id === nodeData.id && (s.type === 'return' || s.type === 'base_case'));
+            const returnValue = returnStep ? returnStep.result : null;
 
-            let label = 'root';
-            if (problem === 'fibonacci') label = `fib(${nodeData.n})`;
-            if (problem === 'knapsack') label = `k(i: ${nodeData.index}, c: ${nodeData.capacity})`;
-            if (problem === 'lcs') label = `lcs(i: ${nodeData.i}), j: ${nodeData.j}`;
+            let mainLabel = "root";
+            if (problem === 'fibonacci') mainLabel = `fib(${nodeData.n})`;
+            if (problem === 'knapsack') mainLabel = `k(i: ${nodeData.index}, c: ${nodeData.capacity})`;
+            if (problem === 'lcs') mainLabel = `k(i: ${nodeData.i}, j: ${nodeData.j})`;
 
-            let backgroundColor = '#4a5568';
-            if (isVisible) {
-                const returnStep = trace.find(step => step.id === nodeData.id && (step.type === 'return' || step.type === 'base_case' || step.type === 'cache_hit'));
-                backgroundColor = returnStep ? '#a0aec0' : '#718096';
-                if (nodeData.id === currentTraceStep.id){
-                    backgroundColor = currentTraceStep.type === 'cache_hit' ? '#4299e1' : '#48bb78';
+            let returnExpression = '';
+            if (returnValue !== null){
+               
+                if (problem === 'fibonacci' && returnStep && returnStep.explanation.includes('+')){
+                    const parts = returnStep.explanation.match(/(\d+)\s*\+\s*(\d+)/);
+                    if(parts) {
+                        returnExpression = `${parts[1]} + ${parts[2]} = ${returnValue}`;
+                    } else {
+                        returnExpression = `Base Case = ${returnValue}`;
+                    }
+                } else {
+                    returnExpression = `Returns: ${returnValue}`;
                 }
-            } 
+            }
 
             return {
                 id: String(nodeData.id),
-                position: {x: nodeData.x, y: nodeData.y},
-                data: {label},
+                position: {x: d3Node.x, y: d3Node.y},
+                data: {
+                    label: (
+                        <div style={{ textAlign: 'center', opacity: isVisible ? 1 : 0.4 }}>
+                            <div style ={{ fontWeight: 'bold', color: '#f87171', fontSize: '0.85em', marginBottom:'2px', minHeight: '1.2em' }}>
+                                {returnExpression}
+                            </div>
+                            <div>
+                                <strong>{mainLabel}</strong>
+                            </div>
+                        </div>
+                    )
+                },
                 style: {
-                    background: backgroundColor,
-                    color: 'white',
-                    border: '2px solid #2d3748',
-                    opacity: isVisible ? 1 : 0.3,
-                    padding: '10px',
-                    borderRadius: '50%',
-                    width: 60,
-                    height: 60,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '12px'
-                }
+                    border: nodeData.id === currentTraceStep.id ? '2px solid #48bb78' : '2px solid #2d3748',
+                    borderRadius: '8px',
+                    padding: '8px 12px',
+                    background: '#4a5568',
+                    color: 'white'
+                },
             };
         });
 
-        const edges = allNodes
-            .filter(node => node.parent_id !== null & node.parent_id !== undefined)
-            .map(node => ({
-                id: `e${node.parent_id} - ${node.id}`,
-                source: String(node.parent_id),
-                target: String(node.id),
+        const edges = root.links().map(link => {
+            const childNodeId = parseInt(link.target.id, 10);
+            const childReturnStep = currentTraceSlice.find(s => s.id === childNodeId && (s.type === 'return' || s.type === 'base_case'));
+            const childReturnValue = childReturnStep ? childReturnStep.result : null;
+            
+            return {
+                id: `e-${link.source.id}-${link.target.id}`,
+                source: String(link.source.id),
+                target: String(link.target.id),
                 type: 'smoothstep',
-                animated: node.id === currentTraceStep.id,
-                style: {stroke: '#4a5568', strokeWidth: 2  }
-            }));
+                markerEnd: { type: MarkerType.ArrowClosed, color: '#a0aec0'},
+                style: { stroke: '#a0aec0', strokeWidth: 1.5},
+                label: childReturnValue !== null ? String(childReturnValue) : '',
+                labelStyle: { fill: '#f87171', fontWeight: 'bold' },
+            };
+        });
 
-        console.log('Final nodes for React Flow:', nodes);
-        console.log('Final edges for React Flow:', edges);
+        return { nodes, edges };
 
-        return {nodes, edges};
-        }, [trace, currentStep, problem])
+    }, [trace, currentStep, problem]);
+
+    useEffect(() => {
+        if (nodesAndEdges.nodes.length > 0 && trace[currentStep]) {
+            const currentNodeId = String(trace[currentStep].id);
+            const currentNode = nodesAndEdges.nodes.find(n => n.id === currentNodeId);
+
+            if (currentNode){
+                reactFlowInstance.setCenter(
+                    currentNode.position.x,
+                    currentNode.position.y,
+                    { zoom: 0.9, duration: 500 }
+                );
+            }
+        }
+    }, [currentStep, nodesAndEdges.nodes, reactFlowInstance, trace]);
 
     return (
         <ReactFlow
-            nodes={nodeAndEdges.nodes}
-            edges={nodeAndEdges.edges}
+            nodes={nodesAndEdges.nodes}
+            edges={nodesAndEdges.edges}
             fitView
+            fitViewOptions={{ padding: 0.2 }}
         >
-            <Background color='#4a5568' gap={16}/>
-            <Controls showInteractive={false}/>
+            <Background color='4a5568' gap={16} />
+            <Controls showInteractive={false} />
         </ReactFlow>
-    );  
+    );
 };
 
 const TableVisualizer = ({trace, currentStep}) => {
@@ -189,7 +165,7 @@ const TableVisualizer = ({trace, currentStep}) => {
                         {cellValue}
                     </div>
                 ))
-            )};
+            )}
             </div>
         </div>
     );
@@ -203,12 +179,15 @@ const Visualization = ({trace, currentStep, problem, algorithm}) => {
 
 
     if (algorithm === 'tabulation'){
-        console.log('Tabulation');
-        return <TableVisualizer trace={trace} currentStep={currentStep} />;
+        return <TableVisualizer trace={trace} currentStep={currentStep} />
     }
     else{
-        console.log('Tree')
-        return <TreeVisualizer trace={trace} currentStep={currentStep} problem ={problem} />
+        return (
+            <ReactFlowProvider>
+                <TreeVisualizer trace={trace} currentStep={currentStep} problem ={problem} />
+            </ReactFlowProvider>
+        
+        );
     }
 
 };
