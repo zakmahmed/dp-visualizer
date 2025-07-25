@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import ReactFlow, { Background, Controls, MarkerType, useReactFlow,  ReactFlowProvider } from 'reactflow';
+import ReactFlow, { Background, Controls, MarkerType, useReactFlow,  ReactFlowProvider, Handle, Position } from 'reactflow';
 import 'reactflow/dist/style.css';
 import * as d3 from 'd3';
 
@@ -64,9 +64,51 @@ const CacheTable = ({ memoData, currentTraceStep, problem }) => {
     );
 };
 
+const CustomNode = ({ data }) => {
+    const { mainLabel, returnExpression, isCurrent, isVisible, explanation } = data;
+
+    return (
+        <div
+            style={{
+                border: isCurrent ? '2px solid #48bb78' : '2px solid #2d3748',
+                borderRadius: '8px',
+                padding: '8px 12px',
+                background: '#4a5568',
+                color: 'white',
+                opacity: isVisible ? 1 : 0.4,
+                textAlign: 'center',
+                position: 'relative'
+            }}
+            >
+                <Handle type='target' position={Position.Top} style={{ background: '#555' }} />
+                <div style={{ fontWeight: 'bold', color: '#f87171', fontSize: '0.85em', marginBottom: '2px', minHeight: '1.2em'}}>
+                    {returnExpression}
+                </div>
+                <div>
+                    <strong>{mainLabel}</strong>
+                </div>
+                {isCurrent && (
+                    <div
+                        className='absolute left-full ml-4 bg-gray-900 text-white p-2 rounded-md shadow-lg text-sm z-50 transform -translate-y-1/2 top-1/2 w-48'
+                    >
+                        {explanation}
+                    </div>
+                )}
+
+                <Handle type='source' position={Position.Bottom} style={{ background: '#555' }} />
+            </div>
+                
+    );
+            
+            
+};
+
+const nodeTypes = { custom: CustomNode };
+
 const TreeVisualizer = ({ trace, currentStep, problem, algorithm }) => {
     const reactFlowInstance = useReactFlow();
     const [persistentMemo, setPersistentMemo] = useState(null);
+    const [tooltip, setTooltip] = useState({ visible: false, content: '', x: 0, y:0});
 
     const nodesAndEdges = useMemo(() => {
         if (!trace || trace.length === 0 || !trace[currentStep]) {
@@ -96,8 +138,10 @@ const TreeVisualizer = ({ trace, currentStep, problem, algorithm }) => {
         const nodes = allNodes.map(d3Node => {
             const nodeData = d3Node.data.originalData;
             const isVisible = nodeData.id <= currentTraceStep.id;
+            const isCurrent = nodeData.id === currentTraceStep.id;
             const returnStep = currentTraceSlice.find(s => s.id === nodeData.id && (s.type === 'return' || s.type === 'base_case'));
             const returnValue = returnStep ? returnStep.result : null;
+            
 
             let mainLabel = "root";
             if (problem === 'fibonacci') mainLabel = `fib(${nodeData.n})`;
@@ -122,30 +166,22 @@ const TreeVisualizer = ({ trace, currentStep, problem, algorithm }) => {
             return {
                 id: String(nodeData.id),
                 position: {x: d3Node.x, y: d3Node.y},
+                type: 'custom',
+                zIndex: isCurrent ? 10 : 1,
                 data: {
-                    label: (
-                        <div style={{ textAlign: 'center', opacity: isVisible ? 1 : 0.4 }}>
-                            <div style ={{ fontWeight: 'bold', color: '#f87171', fontSize: '0.85em', marginBottom:'2px', minHeight: '1.2em' }}>
-                                {returnExpression}
-                            </div>
-                            <div>
-                                <strong>{mainLabel}</strong>
-                            </div>
-                        </div>
-                    )
-                },
-                style: {
-                    border: nodeData.id === currentTraceStep.id ? '2px solid #48bb78' : '2px solid #2d3748',
-                    borderRadius: '8px',
-                    padding: '8px 12px',
-                    background: '#4a5568',
-                    color: 'white'
+                    mainLabel,
+                    returnExpression,
+                    isVisible,
+                    isCurrent: nodeData.id === currentTraceStep.id,
+                    explanation: nodeData.id === currentTraceStep.id ? currentTraceStep.explanation : ''
                 },
             };
         });
 
+
         const edges = root.links().map(link => {
             const childNodeId = parseInt(link.target.id, 10);
+
             const childReturnStep = currentTraceSlice.find(s => s.id === childNodeId && (s.type === 'return' || s.type === 'base_case'));
             const childReturnValue = childReturnStep ? childReturnStep.result : null;
             
@@ -183,21 +219,28 @@ const TreeVisualizer = ({ trace, currentStep, problem, algorithm }) => {
             const currentNode = nodesAndEdges.nodes.find(n => n.id === currentNodeId);
 
             if (currentNode){
-                reactFlowInstance.setCenter(
-                    currentNode.position.x,
-                    currentNode.position.y,
-                    { zoom: 0.9, duration: 500 }
-                );
-            }
+                const x = currentNode.position.x;
+                const y = currentNode.position.y;
+                
+                reactFlowInstance.setCenter(x, y, { zoom: 0.9, duration: 500 })
+            } 
         }
     }, [currentStep, nodesAndEdges.nodes, reactFlowInstance, trace]);
 
+    useEffect(() => {
+        if (trace.length === 0) {
+            setTooltip({visible: false, content: '', x: 0, y: 0});
+        }
+    }, [trace]);
+    
+    
     
     return (
         <div className='w-full h-full relative'>
             <ReactFlow
                 nodes={nodesAndEdges.nodes}
                 edges={nodesAndEdges.edges}
+                nodeTypes={nodeTypes}
                 fitView
                 fitViewOptions={{ padding: 0.2 }}
             >
@@ -205,6 +248,15 @@ const TreeVisualizer = ({ trace, currentStep, problem, algorithm }) => {
                 <Controls showInteractive={false} />
             </ReactFlow>
             {algorithm === 'memoization' && <CacheTable memoData={persistentMemo} currentTraceStep={trace[currentStep]} problem={problem} />}
+
+            {tooltip.visible && (
+                <div 
+                    style={{ top: tooltip.y, left: tooltip.x, position: 'absolute'}}
+                    className='bg-gray-900 text-white p-2 rounded-md shadow-lg text-sm z-50 pointer-events-none transform -translate-y-1/2'
+                >
+                    {tooltip.content}
+                </div>
+            )}
             
         </div>
     );
