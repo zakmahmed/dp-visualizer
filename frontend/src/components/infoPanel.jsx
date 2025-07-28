@@ -34,8 +34,8 @@ const InfoPanel = ({ trace, currentStep, algorithm }) => {
             );
         }
 
-        if (algorithm === 'recursive') {
-            return <div>Function Calls: <span className='font-mono text-cyan-400'>{metrics.iterations}</span></div>
+        if (algorithm === 'tabulation') {
+            return <div>Iterations: <span className='font-mono text-cyan-400'>{metrics.iterations}</span></div>
         }
         return null;
     };

@@ -288,15 +288,25 @@ const TableVisualizer = ({trace, currentStep}) => {
         <div className='flex items-center justify-center w-full h-full p-4'>
             <div className='grid' style={{ gridTemplateColumns: `repeat(${data[0].length}, minmax(0, 1fr))`}}>
                 {data.map((row, i) => 
-                row.map((cellValue, j) => (
-                    <div
+                row.map((cellValue, j) => {
+                    const highlight = currentTraceStep.highlight;
+                    const isHighlighted = highlight && (is2D ? (highlight.row === i && highlight.col === j) : (highlight.i === j));
+                    return (
+                         <div
                         key={`${i} - ${j}`}
                         className='flex items-center justify-center border border-gray-700 aspect-square text-white font-mono'
                         style={{backgroundColor: getCellColor(i, j)}}
                     >
                         {cellValue}
+                        {isHighlighted && (
+                            <div className='absolute bottom-full mb-2 w-48 bg-gray-900 text-white p-2 rounded-md shadow-lg text-sm z-50 pointer-events-none'>
+                                {currentTraceStep.explanation}
+                            </div>
+                        )}
                     </div>
-                ))
+                    )
+                   
+                })
             )}
             </div>
         </div>
