@@ -49,12 +49,12 @@ const PlaybackControls = ({ vizState, setVizState, currentStep, setCurrentStep, 
     return (
         <div className='w-1/2 bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col items-center justify-center gap-4'>
             <div className='w-full px-2'>
-                <label htmlFor='timeline-slider' className='block text-sm font-medium text-gray-400 mb-1'>
+                <label htmlFor='slider' className='block text-sm font-medium text-gray-400 mb-1'>
                     Step: <span className='font-mono text-cyan-400'>{currentStep}</span> / 
                     <span className='font-mono text-gray-500'>{traceLength > 0 ? traceLength - 1 : 0}</span>
                 </label>
                 <input
-                    id='timeline-slider'
+                    id='slider'
                     type='range'
                     min="0"
                     max={traceLength > 0 ? traceLength - 1 : 0}
