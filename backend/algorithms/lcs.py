@@ -23,7 +23,7 @@ def lcs_recursive_trace(s1, s2):
             'depth' : depth,
             'i' : i,
             'j' : j,
-            'explanation': f"Comparing s1[{i}] with capacity s2[{j}]."
+            'explanation': f"Comparing s1[{i}] with s2[{j}]."
         })
         
         # Base Case
@@ -92,7 +92,7 @@ def lcs_memo_trace(s1, s2):
             'depth' : depth,
             'i' : i,
             'j' : j,
-            'explanation': f"Comparing s1[{i}] with capacity s2[{j}]. Checking cache."
+            'explanation': f"Comparing s1[{i}] with s2[{j}]. Checking cache."
         })
         
         # Checking Cache
@@ -104,7 +104,7 @@ def lcs_memo_trace(s1, s2):
                 'state': state,
                 'result' : memo[state],
                 'memo' : {str(k):v for k, v in memo.items()}, 
-                'explanation': f'Result for ({i}, {j}) found in cache. Returning {memo[state]}'
+                'explanation': f'Result for ({s1[i]}, {s2[j]}) found in cache. Returning {memo[state]}'
             })
             return memo[state]
         
@@ -113,7 +113,7 @@ def lcs_memo_trace(s1, s2):
             'type': 'cache_miss',
             'id': call_id,
             'state' : state,
-            'explanation': f'Result for ({i}, {j}) not found in cache. Computing'
+            'explanation': f'Result for ({s1[i]}, {s2[j]}) not found in cache. Computing'
         })
         
         # Base Case
