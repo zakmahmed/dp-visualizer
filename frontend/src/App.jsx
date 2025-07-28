@@ -103,6 +103,9 @@ export default function App(){
 
   }, [socket, problem, algorithm, params, vizState])
 
+
+  const currentTraceStep = (trace && trace.length > currentStep) ? trace[currentStep] : null;
+
   return (
     <div className='bg-gray-900 text-gray-200 min-h-screen font-sans flex flex-col'>
       <header className='bg-gray-800 p-4 shadow-md text-center border-b border-gray-700'>
@@ -110,8 +113,8 @@ export default function App(){
         <p className='text-gray-400 mt-1'>An interactive teaching tool</p>
       </header>
 
-      <div className='flex flex-1 p-4 gap-4 overflow-hidden'>
-        <div className='w-1/4 bg-gray-800 p-4 rounded-lg shadow-lg flex flex-col gap-6 overflow-y-auto'>
+      <div className='flex flex-col md:flex-row flex-1 p-2 md:p4 gap-4 overflow-hidden'>
+        <div className='w-full md:w-1/4 bg-gray-800 p-4 rounded-lg shadow-lg flex flex-col gap-6 overflow-y-auto'>
           <ControlPanel
             problem={problem}
             setProblem={setProblem}
@@ -127,36 +130,48 @@ export default function App(){
             />
         </div>
 
-        <div className='flex-1 flex flex-col gap-4'>
+        <div className='flex-1 flex flex-col gap-4 min-h-0'>
           <main className='flex-1 bg-gray-800 rounded-lg shadow-lg p-2 relative'>
             <Visualization
               trace={trace}
               currentStep={currentStep}
+              currentTraceStep={currentTraceStep}
               problem={problem}
               algorithm={algorithm}
             />
           </main>
-          <div className='w-1/2'>
-            <CodePanel problem={problem} algorithm={algorithm} />
-          </div>
+          <div className='flex flex-col md:flex-row gap-4'>
+              <div className='w-full md:w-1/2'>
+                  <CodePanel problem={problem} algorithm={algorithm} />
+              </div>
 
-          <div className='w-1/2 flex flex-col gap-4'>
-            <div className='flex-grow'>
-                <InfoPanel
+              <div className='w-full md:w-1/2 gap-4 flex-grow'>
+                
+                <div className='w-full gap-4 mb-4'>
+                  <InfoPanel
                   trace={trace}
                   currentStep={currentStep}
+                  currentTraceStep={currentTraceStep}
                   algorithm={algorithm}
                 />
-            </div>
-            
-            <PlaybackControls
-              vizState={vizState}
-              setVizState={setVizState}
-              currentStep={currentStep}
-              setCurrentStep={setCurrentStep}
-              traceLength={trace.length}
-            />
+                </div>
+                
+                
+
+                <div className='gap-4 flex-grow'>
+                    <PlaybackControls
+                  vizState={vizState}
+                  setVizState={setVizState}
+                  currentStep={currentStep}
+                  setCurrentStep={setCurrentStep}
+                  traceLength={trace.length}
+                />
+                </div>
+                
+              </div>
+
           </div>
+          
         </div>
       </div>
 
