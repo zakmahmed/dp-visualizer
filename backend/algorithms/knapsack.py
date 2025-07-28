@@ -55,33 +55,37 @@ def knapsack_recursive_trace(weights, values, capacity):
             # Don't include the current item
             # Trace Event: Exclude Decision Start
             trace.append({
-            'type': 'decision_start',
-            'id': call_id,
-            'branch' : 'exclude'
+                'type': 'decision_start',
+                'id': call_id,
+                'branch' : 'exclude',
+                'explanation' : f'Branch 1: Exclude item {index}'
             })
             value_without_item = solve(index - 1, current_capacity, call_id, depth + 1)
             # Trace Event: Exclude Decision End
             trace.append({
-            'type': 'decision_end',
-            'id': call_id,
-            'branch' : 'exclude',
-            'value' : value_without_item
+                'type': 'decision_end',
+                'id': call_id,
+                'branch' : 'exclude',
+                'value' : value_without_item,
+                'explanation' : f'Value without item {index} is {value_without_item}'
             })
             
             # Include the current item
-            # Trace Event: Exclude Decision Start
+            # Trace Event: Include Decision Start
             trace.append({
-            'type': 'decision_start',
-            'id': call_id,
-            'branch' : 'exclude'
+                'type': 'decision_start',
+                'id': call_id,
+                'branch' : 'include',
+                'explanation' : f'Branch 2: Include item {index}'
             })
             value_with_item = values[index] + solve(index - 1, current_capacity - weights[index], call_id, depth + 1)
-            # Trace Event: Exclude Decision End
+            # Trace Event: Include Decision End
             trace.append({
-            'type': 'decision_end',
-            'id': call_id,
-            'branch' : 'exclude',
-            'value' : value_with_item
+                'type': 'decision_end',
+                'id': call_id,
+                'branch' : 'include',
+                'value' : value_with_item,
+                'explanation' : f'Value with item {index} is {value_with_item}'
             })
             
             result = max(value_without_item, value_with_item)
@@ -179,23 +183,27 @@ def knapsack_memo_trace(weights, values, capacity):
             trace.append({
             'type': 'decision_start',
             'id': call_id,
-            'branch' : 'exclude'
+            'branch' : 'exclude',
+            'explanation' : f'Branch 1: Exclude item {index}'
             })
             value_without_item = solve(index - 1, current_capacity, call_id, depth + 1)
+            
             # Trace Event: Exclude Decision End
             trace.append({
             'type': 'decision_end',
             'id': call_id,
             'branch' : 'exclude',
-            'value' : value_without_item
+            'value' : value_without_item,
+            'explanation' : f'Value without item {index} is {value_without_item}'
             })
             
             # Include the current item
-            # Trace Event: Exclude Decision Start
+            # Trace Event: Include Decision Start
             trace.append({
             'type': 'decision_start',
             'id': call_id,
-            'branch' : 'exclude'
+            'branch' : 'include',
+            'explanation' : f'Branch 2: Include item {index}'
             })
             value_with_item = values[index] + solve(index - 1, current_capacity - weights[index], call_id, depth + 1)
             # Trace Event: Exclude Decision End
@@ -203,7 +211,8 @@ def knapsack_memo_trace(weights, values, capacity):
             'type': 'decision_end',
             'id': call_id,
             'branch' : 'exclude',
-            'value' : value_with_item
+            'value' : value_with_item,
+            'explanation' : f'Value with item {index} is {value_with_item}'
             })
             
             result = max(value_without_item, value_with_item)
