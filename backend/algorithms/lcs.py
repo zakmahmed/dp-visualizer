@@ -32,7 +32,8 @@ def lcs_recursive_trace(s1, s2):
             trace.append({
                 'type' : 'base_case',
                 'id' : call_id,
-                'result' : 0      
+                'result' : 0,
+                'explanation' : 'Base Case reached. One string is empty. Returning 0'
             })
             return 0
         
@@ -42,13 +43,14 @@ def lcs_recursive_trace(s1, s2):
             trace.append({
                 'type' : 'match',
                 'id' : call_id, 
-                'char' : s1[i]
+                'char' : s1[i],
+                'explanation' : f'Match! s1[{i}] == s2[{j}] ({s1[i]}). Adding 1 to the result of the subproblem'
             })
             result = 1 + solve(i - 1, j - 1, call_id, depth + 1)
             
         else:
             # Trace Event: Mismatch
-            trace.append({'type' : 'mismatch', 'id' : call_id})
+            trace.append({'type' : 'mismatch', 'id' : call_id, 'explanation': 'Characters do not match. Moving onto the next two subproblems'})
             res1 = solve(i - 1, j, call_id, depth + 1)
             res2 = solve(i, j - 1, call_id, depth + 1)
             result = max(res1, res2)
@@ -56,7 +58,8 @@ def lcs_recursive_trace(s1, s2):
         trace.append({
             'type' : 'return',
             'id' : call_id,
-            'result' : result
+            'result' : result,
+            'explanation' : f'Returning {result} for lcs(i: {i}, j: {j}).'
         })
         
         return result
@@ -94,21 +97,23 @@ def lcs_memo_trace(s1, s2):
         
         # Checking Cache
         if state in memo:
-        # Trace Event: Function Call
+        # Trace Event: cahce hit
             trace.append({
                 'type': 'cache_hit',
                 'id': call_id,
                 'state': state,
                 'result' : memo[state],
-                'memo' : {str(k):v for k, v in memo.items()}, # make keys JSON Serializable for frontend
+                'memo' : {str(k):v for k, v in memo.items()}, 
+                'explanation': f'Result for ({i}, {j}) found in cache. Returning {memo[state]}'
             })
             return memo[state]
         
-        # Trace Event: Mismatch
+        # Trace Event: cache miss
         trace.append({
             'type': 'cache_miss',
             'id': call_id,
             'state' : state,
+            'explanation': f'Result for ({i}, {j}) not found in cache. Computing'
         })
         
         # Base Case
@@ -116,7 +121,8 @@ def lcs_memo_trace(s1, s2):
             trace.append({
                 'type' : 'base_case',
                 'id' : call_id,
-                'result' : 0      
+                'result' : 0,
+                'explanation' : 'Base Case reached. One string is empty. Returning 0'     
             })
             return 0
         
@@ -125,13 +131,14 @@ def lcs_memo_trace(s1, s2):
             trace.append({
                 'type' : 'match',
                 'id' : call_id, 
-                'char' : s1[i]
+                'char' : s1[i],
+                'explanation': f'Match! s1[{i}] == s2[{j}] ({s1[i]}). Adding 1 to the result of the subproblem'
             })
             result = 1 + solve(i - 1, j - 1, call_id, depth + 1)
             
         else:
             # Trace Event: Mismatch
-            trace.append({'type' : 'mismatch', 'id' : call_id})
+            trace.append({'type' : 'mismatch', 'id' : call_id, 'explanation': 'Characters do not match. Moving onto the next two subproblems'})
             res1 = solve(i - 1, j, call_id, depth + 1)
             res2 = solve(i, j - 1, call_id, depth + 1)
             result = max(res1, res2)
@@ -144,7 +151,15 @@ def lcs_memo_trace(s1, s2):
             'id': call_id,
             'state': state,
             'result' : result,
-            'memo' : {str(k):v for k, v in memo.items()}
+            'memo' : {str(k):v for k, v in memo.items()},
+            'explanation': 'Storing result for ({i}, {j}): {result} in cache.'
+        })
+        
+        trace.append({
+            'type' : 'return',
+            'id' : call_id,
+            'result' : result,
+            'explanation' : f'Returning {result} for lcs(i: {i}, j: {j}).'
         })
         
         return result

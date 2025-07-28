@@ -43,12 +43,17 @@ class TestSocketIOAPP(unittest.TestCase):
         
         # Check for a group of traceback steps
         self.assertGreater(len(received_events), 1)
-        self.assertEqual(received_events[1]['name'], 'trace_step')
+        self.assertEqual(received_events[1]['name'], 'full_trace')
         
         self.assertEqual(received_events[-1]['name'], 'execution_complete')
         
+        
+        # Get full_trace payload
+        full_trace_payload = received_events[1]['args'][0]
+        trace_array = full_trace_payload['trace']
+        
         # Check final result
-        final_step = received_events[-2]['args'][0]
+        final_step = trace_array[-1]
         self.assertEqual(final_step['result'], 5)
         
     
@@ -66,13 +71,19 @@ class TestSocketIOAPP(unittest.TestCase):
         
         received_events = self.socketio_client.get_received()
         
+        
         # Check for a group of traceback steps
         self.assertGreater(len(received_events), 1)
-        self.assertEqual(received_events[1]['name'], 'trace_step')
+        self.assertEqual(received_events[1]['name'], 'full_trace')
         self.assertEqual(received_events[-1]['name'], 'execution_complete')
         
+        # Get full_trace payload
+        full_trace_payload = received_events[1]['args'][0]
+        print(full_trace_payload)
+        trace_array = full_trace_payload['trace']
+        
         # Check final result
-        final_step = received_events[-2]['args'][0]
+        final_step = trace_array[-1]
         self.assertEqual(final_step['result'], 220)
         
     
@@ -91,11 +102,16 @@ class TestSocketIOAPP(unittest.TestCase):
         
         # Check for a group of traceback steps
         self.assertGreater(len(received_events), 1)
-        self.assertEqual(received_events[1]['name'], 'trace_step')
+        self.assertEqual(received_events[1]['name'], 'full_trace')
         self.assertEqual(received_events[-1]['name'], 'execution_complete')
         
+        # Get full_trace payload
+        full_trace_payload = received_events[1]['args'][0]
+        print(full_trace_payload)
+        trace_array = full_trace_payload['trace']
+        
         # Check final result
-        final_step = received_events[-2]['args'][0]
+        final_step = trace_array[-1]
         self.assertEqual(final_step['result_length'], 4)
         self.assertEqual(final_step['result'], "GTAB")
     
