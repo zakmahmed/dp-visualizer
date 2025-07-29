@@ -105,7 +105,7 @@ const CustomNode = ({ data }) => {
 
 const nodeTypes = { custom: CustomNode };
 
-const TreeVisualizer = ({ trace, currentStep, problem, algorithm }) => {
+export const TreeVisualizer = ({ trace, currentStep, problem, algorithm }) => {
     const reactFlowInstance = useReactFlow();
     const [persistentMemo, setPersistentMemo] = useState(null);
     const [tooltip, setTooltip] = useState({ visible: false, content: '', x: 0, y:0});
@@ -262,7 +262,7 @@ const TreeVisualizer = ({ trace, currentStep, problem, algorithm }) => {
     );
 };
 
-const TableVisualizer = ({trace, currentStep}) => {
+export const TableVisualizer = ({trace, currentStep}) => {
     const currentTraceStep = trace[currentStep];
     if (!currentTraceStep || !currentTraceStep.table) {
         return <div className='flex items-center justify-center h-full text-gray-500'>Awaiting table data...</div>
