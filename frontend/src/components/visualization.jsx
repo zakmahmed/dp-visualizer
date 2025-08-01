@@ -222,7 +222,13 @@ export const TreeVisualizer = ({ trace, currentStep, problem, algorithm }) => {
                 const x = currentNode.position.x;
                 const y = currentNode.position.y;
                 
-                reactFlowInstance.setCenter(x, y, { zoom: 0.9, duration: 500 })
+                if(currentStep === 0) {
+                    setTimeout(() => {
+                         reactFlowInstance.setCenter(x, y, { zoom: 0.9, duration: 800 })
+                    }, 100);
+                }
+
+                reactFlowInstance.setCenter(x, y, { zoom: 0.9, duration: 800 })
             } 
         }
     }, [currentStep, nodesAndEdges.nodes, reactFlowInstance, trace]);
