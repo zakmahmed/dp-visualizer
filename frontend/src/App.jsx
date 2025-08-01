@@ -19,7 +19,7 @@ const parseInput = (value, type) => {
 
 export default function App(){
   // state for websocket connection
-  const [socket, setSocket] = useState(null);
+  const socketRef = useRef(null);
   const [status, setStatus] = useState('Disconnected');
   const [error, setError] = useState('');
 
@@ -41,15 +41,14 @@ export default function App(){
 
   // Effect for setting up websocket connection
   useEffect(() => {
-    const s = io('http://localhost:5001');
-    setSocket(s);
-    s.on('connect', () => setStatus('Connected'));
-    s.on('disconnect', () => setStatus('Disconnected'));
-    s.on('error', (err) => setError(err.message || 'An unknown error occurred'));
+    socketRef.current = io('http://localhost:5001');
+    socketRef.current.on('connect', () => setStatus('Connected'));
+    socketRef.current.on('disconnect', () => setStatus('Disconnected'));
+    socketRef.current.on('error', (err) => setError(err.message || 'An unknown error occurred'));
 
     // Listeners
 
-    s.on('full_trace', (data) => {
+    socketRef.current.on('full_trace', (data) => {
       if (data && data.trace){
         setTrace(data.trace);
       } else{
@@ -57,16 +56,13 @@ export default function App(){
       }
     });
     
-    return () => s.disconnect();
+    return () => socketRef.current.disconnect();
 
   }, []);
 
   useEffect(() => {
     if (trace.length > 0 && vizState === 'loading'){
-      setTimeout(() => {
-         setVizState('running');
-      }, 0);
-     
+      setVizState('running');
     }
   }, [trace, vizState])
 
@@ -76,7 +72,7 @@ export default function App(){
     if (vizState === 'running' && currentStep < trace.length - 1){
       timerRef.current = setTimeout(() => {
         setCurrentStep(currentStep + 1);
-      }, 800);
+      }, 1000);
     } else if (vizState === 'running' && currentStep >= trace.length - 1 && trace.length > 0){
       setVizState('complete');
     }
@@ -84,6 +80,7 @@ export default function App(){
 
   // Sending Visualization request to backend
   const handleVisualize = useCallback(() => {
+    const socket = socketRef.current;
     if (!socket || vizState === 'running') return;
 
     // reset previous visualization
@@ -101,7 +98,7 @@ export default function App(){
 
     socket.emit('execute_algorithm', {problem, algorithm, params: parsedParams});
 
-  }, [socket, problem, algorithm, params, vizState])
+  }, [problem, algorithm, params, vizState])
 
 
   const currentTraceStep = (trace && trace.length > currentStep) ? trace[currentStep] : null;
