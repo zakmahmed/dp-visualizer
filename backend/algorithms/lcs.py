@@ -15,16 +15,7 @@ def lcs_recursive_trace(s1, s2):
     def solve(i, j, parent_id, depth):
         call_id  = len(trace)
         
-        # Trace Event: Function Call
-        trace.append({
-            'type': 'call',
-            'id': call_id,
-            'parent': parent_id,
-            'depth' : depth,
-            'i' : i,
-            'j' : j,
-            'explanation': f"Comparing s1[{i}] with s2[{j}]."
-        })
+       
         
         # Base Case
         if i < 0 or j < 0:
@@ -36,6 +27,17 @@ def lcs_recursive_trace(s1, s2):
                 'explanation' : 'Base Case reached. One string is empty. Returning 0'
             })
             return 0
+        
+         # Trace Event: Function Call
+        trace.append({
+            'type': 'call',
+            'id': call_id,
+            'parent': parent_id,
+            'depth' : depth,
+            'i' : i,
+            'j' : j,
+            'explanation': f"Comparing s1[{i}] with s2[{j}]."
+        })
         
         # Match Case
         if s1[i] == s2[j]:
@@ -84,6 +86,16 @@ def lcs_memo_trace(s1, s2):
         call_id  = len(trace)
         state = (i, j)
         
+         # Base Case
+        if i < 0 or j < 0:
+            trace.append({
+                'type' : 'base_case',
+                'id' : call_id,
+                'result' : 0,
+                'explanation' : 'Base Case reached. One string is empty. Returning 0'     
+            })
+            return 0
+        
         # Trace Event: Function Call
         trace.append({
             'type': 'call',
@@ -116,15 +128,7 @@ def lcs_memo_trace(s1, s2):
             'explanation': f'Result for ({s1[i]}, {s2[j]}) not found in cache. Computing'
         })
         
-        # Base Case
-        if i < 0 or j < 0:
-            trace.append({
-                'type' : 'base_case',
-                'id' : call_id,
-                'result' : 0,
-                'explanation' : 'Base Case reached. One string is empty. Returning 0'     
-            })
-            return 0
+       
         
         # Match Case
         if s1[i] == s2[j]:
