@@ -127,50 +127,51 @@ export default function App(){
             />
         </div>
 
-        <div className='flex-1 flex flex-col gap-4 min-h-0'>
-          <main className='flex-1 bg-gray-800 rounded-lg shadow-lg p-2 relative'>
-            <Visualization
+        
+          <div className='flex-1 flex flex-col gap-4 min-h-0'>
+            <main className='flex-1 bg-gray-800 rounded-lg shadow-lg p-2 relative'>
+              <Visualization
               trace={trace}
               currentStep={currentStep}
               currentTraceStep={currentTraceStep}
               problem={problem}
               algorithm={algorithm}
             />
-          </main>
-          <div className='flex flex-col md:flex-row gap-4'>
-              <div className='w-full md:w-1/2'>
-                  <CodePanel problem={problem} algorithm={algorithm} />
+            </main>
+
+            <div className='flex flex-col md:flex-row gap-4'>
+              <div className='w-full md:w-1/2'> 
+                <CodePanel problem={problem} algorithm={algorithm} /> 
               </div>
-
-              <div className='w-full md:w-1/2 gap-4 flex-grow'>
-                
-                <div className='w-full gap-4 mb-4'>
-                  <InfoPanel
-                  trace={trace}
-                  currentStep={currentStep}
-                  currentTraceStep={currentTraceStep}
-                  algorithm={algorithm}
+              <div className='w-full md:w-1/2 flex flex-col gap-4'>
+                <InfoPanel
+                    trace={trace}
+                    currentStep={currentStep}
+                    currentTraceStep={currentTraceStep}
+                    algorithm={algorithm}
                 />
-                </div>
-                
-                
-
-                <div className='gap-4 flex-grow'>
-                    <PlaybackControls
-                  vizState={vizState}
-                  setVizState={setVizState}
-                  currentStep={currentStep}
-                  setCurrentStep={setCurrentStep}
-                  traceLength={trace.length}
-                />
-                </div>
-                
               </div>
-
           </div>
+
+          <div className='w-full bg-gray-800 gap-4 rounded-lg'>
+          
+            <PlaybackControls
+                    vizState={vizState}
+                    setVizState={setVizState}
+                    currentStep={currentStep}
+                    setCurrentStep={setCurrentStep}
+                    traceLength={trace.length}
+              />
+          
+              
+        </div>
+        
+
           
         </div>
       </div>
+      
+    
 
     <footer className='text-center p-2 bg-gray-800 border-t border-gray-700 text-sm text-gray-500'>
       Status: {status} {error && `| Error: ${error}`}

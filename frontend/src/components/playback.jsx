@@ -47,7 +47,7 @@ const PlaybackControls = ({ vizState, setVizState, currentStep, setCurrentStep, 
 
 
     return (
-        <div className='w-1/2 bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col items-center justify-center gap-4'>
+        <div className='w-full bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col items-center justify-center gap-4'>
             <div className='w-full px-2'>
                 <label htmlFor='slider' className='block text-sm font-medium text-gray-400 mb-1'>
                     Step: <span className='font-mono text-cyan-400'>{currentStep}</span> / 
@@ -65,7 +65,7 @@ const PlaybackControls = ({ vizState, setVizState, currentStep, setCurrentStep, 
                 />
             </div>
 
-            <div className='flex items-center gap-4'>
+            <div className='flex items-center justify-center gap-4'>
                 <ControlButton onClick={handleReset} disabled={!hasStarted} title='Reset'>
                     <Rewind size={24}/>
                 </ControlButton>
