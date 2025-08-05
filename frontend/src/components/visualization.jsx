@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import ReactFlow, { Background, Controls, MarkerType, useReactFlow,  ReactFlowProvider, Handle, Position } from 'reactflow';
 import { Lightbulb, TriangleAlert } from 'lucide-react';
 import 'reactflow/dist/style.css';
@@ -271,6 +271,20 @@ export const TreeVisualizer = ({ trace, currentStep, problem, algorithm }) => {
 
 export const TableVisualizer = ({trace, currentStep}) => {
     const currentTraceStep = trace[currentStep];
+    const scrollRef = useRef(null);
+
+    useEffect(() => {
+        if(!scrollRef.current) return
+        requestAnimationFrame(() => {
+            scrollRef.current.scrollIntoView({
+                behavior: 'smooth',
+                inline:'center',
+                block: 'nearest'
+            })
+        })
+        //eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentStep])
+
     if (!currentTraceStep || !currentTraceStep.table) {
         return <div className='flex items-center justify-center h-full text-gray-500'>Awaiting table data...</div>
     };
@@ -291,19 +305,30 @@ export const TableVisualizer = ({trace, currentStep}) => {
         return '#4a5568';
     };
 
+
+    console.log("Grid data:", data);
+    console.log("First row length:", data[0]?.length);
+
+    
+
     return (
         <div className='flex flex-col items-center justify-center w-full h-full p-4 gap-6'>
-            <div className='w-full max-w-full overflow-x-auto flex justify-center'>
-                <div className='inline-grid' style={{gridTemplateColumns: `repeat(${data[0].length}, minmax(40px, 1fr))`}}>
+            <div className='w-full overflow-x-auto'>
+                <div className='grid mx-auto' style={{gridTemplateColumns: `repeat(${data[0].length}, 40px)`, width: 'max-content'}}>
                     {data.map((row, i) => 
-                        row.map((cellValue, j) => (
+                        row.map((cellValue, j) => {
+                            const isHighlighted = is2D ? (currentTraceStep.highlight?.row === i && currentTraceStep.highlight?.col === j) : (currentTraceStep.highlight?.i === j);
+                        
+                           return (
                             <div
                                 key={`${i}-${j}`}
-                                className='flex items-center justify-center border border-gray-700 aspect-square text-white font-mono transition-colors duration-300 min-w-[40px]'
+                                ref={isHighlighted ? scrollRef : null}
+                                className='flex items-center justify-center border border-gray-700 text-white font-mono transition-colors duration-300 min-w-[40px] h-10'
                                 style={{ backgroundColor: getCellColor(i, j)}}>
                                     {cellValue}
                             </div>
-                        ))
+                           )
+                        })
                     )}
                 </div>
             </div>
@@ -315,12 +340,12 @@ export const TableVisualizer = ({trace, currentStep}) => {
                 </div>
             )}
 
-            {currentTraceStep.explanation && (
+            {/* {currentTraceStep.explanation && (
                 <div className='bg-gray-900 text-cyan-300 p-3 rounded-md shadow-lg text-sm text-left w-full max-w-md flex items-center gap-3'>
                     <TriangleAlert size={18} className='text-cyan-400 mt-1 flex-shrink-0' />
                     <p>If the entire table is not visible, scroll left on it to see more! </p>
                 </div>
-            )}
+            )} */}
                     
         </div>
     );
