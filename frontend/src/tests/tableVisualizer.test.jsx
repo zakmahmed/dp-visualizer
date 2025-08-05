@@ -1,12 +1,17 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { describe, test, expect } from 'vitest';
+import { describe, test, expect, beforeEach, vi } from 'vitest';
 import '@testing-library/jest-dom';
 import { TableVisualizer } from '../components/visualization.jsx';
 
 
 
 describe('TableVisualizer', () => {
+
+    beforeEach(() => {
+        Element.prototype.scrollIntoView = vi.fn();
+    })
+
     const mock1DTrace = [
         { type: 'init_table', id: 0, table: [0, 0, 0], explanation: 'Intialized table' },
         { type: 'iteration', id: 1, table: [0, 1, 0], highlight: {i: 1},  explanation: 'Setting base case' },

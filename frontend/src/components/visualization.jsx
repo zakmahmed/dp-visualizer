@@ -275,15 +275,16 @@ export const TableVisualizer = ({trace, currentStep, problem}) => {
     const scrollRef = useRef(null);
 
     useEffect(() => {
-        if(!scrollRef.current) return
+        
         requestAnimationFrame(() => {
-            scrollRef.current.scrollIntoView({
-                behavior: 'smooth',
-                inline:'center',
-                block: 'nearest'
-            })
+            if(scrollRef.current) {
+                scrollRef.current.scrollIntoView({
+                    behavior: 'smooth',
+                    inline:'center',
+                    block: 'nearest'
+                })
+            }
         })
-        //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentStep])
 
     if (!currentTraceStep || !currentTraceStep.table) {
