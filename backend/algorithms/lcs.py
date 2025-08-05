@@ -236,7 +236,8 @@ def lcs_tab_trace(s1, s2):
         trace.append({
         'type': 'traceback_step',
         'highlight' : {'row' : i, 'col' : j},
-        'explanation': f"Tracing back from dp[{i}][{j}]."
+        'explanation': f"Tracing back from dp[{i}][{j}].",
+        'table': [row[:] for row in dp]
         })
         
         if s1[i - 1] == s2[j - 1]:
@@ -244,7 +245,8 @@ def lcs_tab_trace(s1, s2):
             trace.append({
             'type': 'traceback_match',
             'char' : s1[i - 1],
-            'explanation': f"Found common character {s1[i - 1]}. Moving diagonally up towards the left."
+            'explanation': f"Found common character {s1[i - 1]}. Moving diagonally up towards the left.",
+            'table': [row[:] for row in dp]
             })
             i -= 1
             j -= 1
@@ -262,7 +264,8 @@ def lcs_tab_trace(s1, s2):
         'type': 'traceback_complete',
         'result_length' : lcs_len,
         'result' : result_str,
-        'explanation': f"Traceback complete. LCS is '{result_str}'"
+        'explanation': f"Traceback complete. LCS is '{result_str}'",
+        'table': [row[:] for row in dp]
     })            
     return trace
          

@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import ReactFlow, { Background, Controls, MarkerType, useReactFlow,  ReactFlowProvider, Handle, Position } from 'reactflow';
+import { Lightbulb, TriangleAlert } from 'lucide-react';
 import 'reactflow/dist/style.css';
 import * as d3 from 'd3';
 
@@ -291,33 +292,44 @@ export const TableVisualizer = ({trace, currentStep}) => {
     };
 
     return (
-        <div className='flex items-center justify-center w-full h-full p-4'>
-            <div className='grid' style={{ gridTemplateColumns: `repeat(${data[0].length}, minmax(0, 1fr))`}}>
-                {data.map((row, i) => 
-                row.map((cellValue, j) => {
-                    const highlight = currentTraceStep.highlight;
-                    const isHighlighted = highlight && (is2D ? (highlight.row === i && highlight.col === j) : (highlight.i === j));
-                    return (
-                         <div
-                        key={`${i} - ${j}`}
-                        className='flex items-center justify-center border border-gray-700 aspect-square text-white font-mono'
-                        style={{backgroundColor: getCellColor(i, j)}}
-                    >
-                        {cellValue}
-                        {isHighlighted && (
-                            <div className='absolute bottom-full mb-2 w-48 bg-gray-900 text-white p-2 rounded-md shadow-lg text-sm z-50 pointer-events-none'>
-                                {currentTraceStep.explanation}
+        <div className='flex flex-col items-center justify-center w-full h-full p-4 gap-6'>
+            <div className='w-full max-w-full overflow-x-auto flex justify-center'>
+                <div className='inline-grid' style={{gridTemplateColumns: `repeat(${data[0].length}, minmax(40px, 1fr))`}}>
+                    {data.map((row, i) => 
+                        row.map((cellValue, j) => (
+                            <div
+                                key={`${i}-${j}`}
+                                className='flex items-center justify-center border border-gray-700 aspect-square text-white font-mono transition-colors duration-300 min-w-[40px]'
+                                style={{ backgroundColor: getCellColor(i, j)}}>
+                                    {cellValue}
                             </div>
-                        )}
-                    </div>
-                    )
-                   
-                })
-            )}
+                        ))
+                    )}
+                </div>
             </div>
+
+            {currentTraceStep.explanation && (
+                <div className='bg-gray-900 text-cyan-300 p-3 rounded-md shadow-lg text-sm text-left w-full max-w-md flex items-center gap-3'>
+                    <Lightbulb size={18} className='text-cyan-400 mt-1 flex-shrink-0' />
+                    <p>{currentTraceStep.explanation}</p>
+                </div>
+            )}
+
+            {currentTraceStep.explanation && (
+                <div className='bg-gray-900 text-cyan-300 p-3 rounded-md shadow-lg text-sm text-left w-full max-w-md flex items-center gap-3'>
+                    <TriangleAlert size={18} className='text-cyan-400 mt-1 flex-shrink-0' />
+                    <p>If the entire table is not visible, scroll left on it to see more! </p>
+                </div>
+            )}
+                    
         </div>
     );
+
+    
+    
 };
+
+    
 
 //Main Visualization component
 const Visualization = ({trace, currentStep, problem, algorithm}) => {
