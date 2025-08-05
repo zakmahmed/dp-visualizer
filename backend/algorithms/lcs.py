@@ -233,20 +233,23 @@ def lcs_tab_trace(s1, s2):
     i, j = m, n
     
     while i > 0 and j > 0:
+        current_reconstruction = "".join(reversed(lcs_str))
         trace.append({
-        'type': 'traceback_step',
-        'highlight' : {'row' : i, 'col' : j},
-        'explanation': f"Tracing back from dp[{i}][{j}].",
-        'table': [row[:] for row in dp]
+            'type': 'traceback_step',
+            'highlight' : {'row' : i, 'col' : j},
+            'explanation': f"Tracing back from dp[{i}][{j}].",
+            'table': [row[:] for row in dp],
+            'reconstructed' : current_reconstruction
         })
         
         if s1[i - 1] == s2[j - 1]:
             lcs_str.append(s1[i - 1])
             trace.append({
-            'type': 'traceback_match',
-            'char' : s1[i - 1],
-            'explanation': f"Found common character {s1[i - 1]}. Moving diagonally up towards the left.",
-            'table': [row[:] for row in dp]
+                'type': 'traceback_match',
+                'char' : s1[i - 1],
+                'explanation': f"Found common character {s1[i - 1]}. Moving diagonally up towards the left.",
+                'table': [row[:] for row in dp],
+                'reconstructed' : current_reconstruction
             })
             i -= 1
             j -= 1
@@ -265,7 +268,8 @@ def lcs_tab_trace(s1, s2):
         'result_length' : lcs_len,
         'result' : result_str,
         'explanation': f"Traceback complete. LCS is '{result_str}'",
-        'table': [row[:] for row in dp]
+        'table': [row[:] for row in dp],
+        'reconstructed': result_str
     })            
     return trace
          

@@ -309,7 +309,8 @@ def knapsack_tab_trace(weights, values, capacity):
             'type': 'traceback_step',
             'highlight' : {'row' : i, 'col' : w},
             'table': [row[:] for row in dp],
-            'explanation': f"Checking if item {i - 1} was included."
+            'explanation': f"Checking if item {i - 1} was included.",
+            'reconstructed': list(reversed(included_items))
         })
         
         if dp[i][w] != dp[i - 1][w]:
@@ -322,7 +323,8 @@ def knapsack_tab_trace(weights, values, capacity):
             'type': 'item_included',
             'item_index' : item_index,
             'table': [row[:] for row in dp],
-            'explanation': f"Item {item_index} was included. New capacity for traceback {w}"
+            'explanation': f"Item {item_index} was included. New capacity for traceback {w}",
+            'reconstructed': list(reversed(included_items))
         })
     
     included_items.reverse()
@@ -333,7 +335,8 @@ def knapsack_tab_trace(weights, values, capacity):
             'included_items' : included_items,
             'result' : max_value,
             'table': [row[:] for row in dp],
-            'explanation': f"Traceback complete. Items {included_items} give max value"
+            'explanation': f"Traceback complete. Items {included_items} give max value",
+            'reconstructed': included_items
         })
     
     return trace

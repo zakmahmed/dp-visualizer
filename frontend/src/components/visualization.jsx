@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState, useRef } from 'react';
 import ReactFlow, { Background, Controls, MarkerType, useReactFlow,  ReactFlowProvider, Handle, Position } from 'reactflow';
-import { Lightbulb, TriangleAlert } from 'lucide-react';
+import { Lightbulb, Pickaxe } from 'lucide-react';
 import 'reactflow/dist/style.css';
 import * as d3 from 'd3';
 
@@ -269,7 +269,8 @@ export const TreeVisualizer = ({ trace, currentStep, problem, algorithm }) => {
     );
 };
 
-export const TableVisualizer = ({trace, currentStep}) => {
+export const TableVisualizer = ({trace, currentStep, problem}) => {
+    
     const currentTraceStep = trace[currentStep];
     const scrollRef = useRef(null);
 
@@ -306,11 +307,7 @@ export const TableVisualizer = ({trace, currentStep}) => {
     };
 
 
-    console.log("Grid data:", data);
-    console.log("First row length:", data[0]?.length);
-
     
-
     return (
         <div className='flex flex-col items-center justify-center w-full h-full p-4 gap-6'>
             <div className='w-full overflow-x-auto'>
@@ -332,6 +329,17 @@ export const TableVisualizer = ({trace, currentStep}) => {
                     )}
                 </div>
             </div>
+            
+            {currentTraceStep.reconstructed && (
+                <div className='bg-gray-900 text-cyan-300 p-3 rounded-md shadow-lg text-sm text-left w-full max-w-md flex items-center gap-3'>
+                    <Pickaxe size={18} className='text-cyan-400 mt-1 flex-shrink-0' />
+                    {problem === 'knapsack' && Array.isArray(currentTraceStep.reconstructed)
+                        ? currentTraceStep.reconstructed.map(item => `Item ${item}`).join(',')
+                        : <p>{currentTraceStep.reconstructed}</p>
+                    }
+                    
+                </div>
+            )}
 
             {currentTraceStep.explanation && (
                 <div className='bg-gray-900 text-cyan-300 p-3 rounded-md shadow-lg text-sm text-left w-full max-w-md flex items-center gap-3'>
@@ -339,13 +347,6 @@ export const TableVisualizer = ({trace, currentStep}) => {
                     <p>{currentTraceStep.explanation}</p>
                 </div>
             )}
-
-            {/* {currentTraceStep.explanation && (
-                <div className='bg-gray-900 text-cyan-300 p-3 rounded-md shadow-lg text-sm text-left w-full max-w-md flex items-center gap-3'>
-                    <TriangleAlert size={18} className='text-cyan-400 mt-1 flex-shrink-0' />
-                    <p>If the entire table is not visible, scroll left on it to see more! </p>
-                </div>
-            )} */}
                     
         </div>
     );
@@ -364,7 +365,7 @@ const Visualization = ({trace, currentStep, problem, algorithm}) => {
 
 
     if (algorithm === 'tabulation'){
-        return <TableVisualizer trace={trace} currentStep={currentStep} />
+        return <TableVisualizer trace={trace} currentStep={currentStep} problem={problem}/>
     }
     else{
         return (
