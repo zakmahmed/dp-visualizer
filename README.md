@@ -14,8 +14,6 @@ The `frontend` was written using `JavaScript` using the `React` framework and co
 The structure of the project is shown in the dropdown below.
 
 ```ultree
-output: foldable
-open: false
 project_submission
 ├── README.md
 ├── backend
